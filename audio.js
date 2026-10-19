@@ -1,0 +1,5 @@
+let speechToken=0;
+function notify(message){const n=document.getElementById('notice');n.textContent=message;n.classList.add('visible');clearTimeout(notify.timer);notify.timer=setTimeout(()=>n.classList.remove('visible'),6500);}
+function japaneseVoices(){return 'speechSynthesis' in window?speechSynthesis.getVoices().filter(v=>/^ja([-_]|$)/i.test(v.lang)):[];}
+function playKana(k){if(!('speechSynthesis' in window)){notify('此瀏覽器不支援語音播放，請使用支援 Web Speech API 的瀏覽器。');return;}const token=++speechToken;speechSynthesis.cancel();const speak=()=>{if(token!==speechToken)return;const voice=japaneseVoices()[0];if(!voice){notify('尚未找到日文語音。請在裝置的語音設定安裝日文語音，再重新整理；不會改用其他語言。');return;}const u=new SpeechSynthesisUtterance(k.audio);u.lang='ja-JP';u.voice=voice;u.rate=Number(db.settings.rate);u.onerror=e=>{if(!['canceled','interrupted'].includes(e.error))notify('發音未成功，請點擊喇叭重試，並確認已安裝日文語音。');};speechSynthesis.speak(u);};if(japaneseVoices().length)speak();else setTimeout(speak,350);}
+function stopAudio(){speechToken++;if('speechSynthesis' in window)speechSynthesis.cancel();}
